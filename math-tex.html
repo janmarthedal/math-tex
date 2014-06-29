@@ -1,0 +1,39 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+Typesetting math described by TeX, using MathJax.
+
+##### Example
+
+    <math-tex>x^2</math-tex>
+
+@element math-tex
+@blurb Element providing solution to ...
+@status alpha
+@homepage http://github.com/janmarthedal/math-tex/
+-->
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+<script type="text/javascript">
+  MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    skipStartupTypeset: false
+  });
+</script>
+
+<polymer-element name="math-tex" attributes="mode">
+  <template>
+    <script type="math/tex" id="el"></script>
+  </template>
+  <script>
+    Polymer('math-tex', {
+      ready: function () {
+        if (this.mode === 'display') {
+          this.$.el.type = "math/tex; mode=display";
+        }
+        this.$.el.innerHTML = this.textContent;
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.$.el]);
+      }
+    });
+  </script>
+</polymer-element>
+

@@ -1,0 +1,20 @@
+{
+  "name": "math-tex",
+  "version": "0.0.0",
+  "authors": [
+    "Jan Marthedal Rasmussen <me@janmr.com>"
+  ],
+  "description": "Typesetting math described by TeX, using MathJax",
+  "keywords": "math, TeX, MathJax, polymer, web-components",
+  "main": "math-tex.html",
+  "license": "MIT",
+  "homepage": "https://github.com/janmarthedal/math-tex/",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.3",
+    "chai": "~1.9.1",
+    "mocha": "~1.19.0"
+  }
+}
