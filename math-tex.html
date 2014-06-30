@@ -13,14 +13,47 @@ Typesetting math described by TeX, using MathJax.
 @homepage http://github.com/janmarthedal/math-tex/
 -->
 
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
-<script type="text/javascript">
-  MathJax.Hub.Register.StartupHook("Begin Typeset", function () {
-    console.log("Begin Typeset");
-  });
-</script>
+<polymer-element name="math-tex-setup">
+  <script>
+    (function() {
+      var mathJax, toTypeset=[], loading=false;
+      Polymer('math-tex-setup', {
+        ready: function () {
+          if (!loading) {
+            loading = true;
+            var head = document.getElementsByTagName("head")[0], script;
+            script = document.createElement("script");
+            script.type = "text/x-mathjax-config";
+            script.text = "MathJax.Hub.Config({skipStartupTypeset: true, jax: [\"input/TeX\", \"output/HTML-CSS\"]});"
+            head.appendChild(script);
+            script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js";
+            script.onload = function () {
+              mathJax = MathJax;
+              for (var j=0; j < toTypeset.length; j++) {
+                mathJax.Hub.Queue(["Typeset", MathJax.Hub, toTypeset[j]]);
+              }
+            }
+            head.appendChild(script);
+          }
+        },
+        typeset: function (el) {
+          if (mathJax) {
+            mathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
+          } else {
+            toTypeset.push(el);
+          }
+        }
+      });
+    })();
+  </script>
+</polymer-element>
 
 <polymer-element name="math-tex" attributes="mode">
+  <template>
+    <math-tex-setup id="setup"></math-tex-setup>
+  </template>
   <script>
     Polymer('math-tex', {
       ready: function () {
@@ -32,7 +65,7 @@ Typesetting math described by TeX, using MathJax.
         }
         script.innerHTML = this.textContent;
         sd.appendChild(script);
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub, script]);
+        this.$.setup.typeset(script);
       }
     });
   </script>
