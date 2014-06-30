@@ -12,28 +12,28 @@ Typesetting math described by TeX, using MathJax.
 @status alpha
 @homepage http://github.com/janmarthedal/math-tex/
 -->
+
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
 <script type="text/javascript">
-  MathJax.Hub.Config({
-    jax: ["input/TeX", "output/HTML-CSS"],
-    skipStartupTypeset: false
+  MathJax.Hub.Register.StartupHook("Begin Typeset", function () {
+    console.log("Begin Typeset");
   });
 </script>
 
 <polymer-element name="math-tex" attributes="mode">
-  <template>
-    <script type="math/tex" id="el"></script>
-  </template>
   <script>
     Polymer('math-tex', {
       ready: function () {
+        var sd = this.createShadowRoot();
+        var script = document.createElement('script');
+        script.type = "math/tex";
         if (this.mode === 'display') {
-          this.$.el.type = "math/tex; mode=display";
+          script.type += "; mode=display";
         }
-        this.$.el.innerHTML = this.textContent;
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.$.el]);
+        script.innerHTML = this.textContent;
+        sd.appendChild(script);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, script]);
       }
     });
   </script>
 </polymer-element>
-

@@ -5,6 +5,12 @@
   <title>math-tex Demo</title>
 
   <script src="../platform/platform.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    skipStartupTypeset: true,
+    jax: ["input/TeX", "output/HTML-CSS"]
+  });
+</script>
   <link rel="import" href="math-tex.html">
 
 </head>
@@ -17,6 +23,35 @@
     <math-tex mode="display">\sum</math-tex>
 
     <p>And finally, we insert some expression <math-tex>\sqrt{x}</math-tex> inline again.</p>
+
+    <p>To try dynamic insertion, <a href="#" onclick="insert();">press here</a>.</p>
+
+    <ul id="my-list">
+    </ul>
+
+    <p>Should not render: \[\sum\]</p>
+
+    <!-- p>Manually rendered, without &lt;math-tex&gt;:</p>
+
+    <script type="math/tex; mode=display" id="my-el">\sum_{k=1}^n k^2</script>
+
+    <script type="text/javascript">
+        var myel = document.getElementById("my-el");
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, myel]);
+    </script-->
+
+    <script type="text/javascript">
+      window.insert = (function () {
+        var counter = 2;
+        return function () {
+          var ul = document.getElementById("my-list");
+          var li = document.createElement("li");
+          li.innerHTML = "<math-tex>" + (2*counter-1) + " + x^" + counter + "</math-tex>";
+          counter++;
+          ul.appendChild(li);
+        }
+      })();
+    </script>
 
 </body>
 </html>
