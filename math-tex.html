@@ -16,11 +16,16 @@ Typesetting math described by TeX, using MathJax.
 <polymer-element name="math-tex-setup">
   <script>
     (function() {
-      var mathJax, toTypeset=[], loading=false;
+      var mathJax, queue=[], initialized=false;
+
+      function processElement(el) {
+        mathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
+      }
+
       Polymer('math-tex-setup', {
-        ready: function () {
-          if (!loading) {
-            loading = true;
+        created: function () {
+          if (!initialized) {
+            initialized = true;
             var head = document.getElementsByTagName("head")[0], script;
             script = document.createElement("script");
             script.type = "text/x-mathjax-config";
@@ -31,19 +36,14 @@ Typesetting math described by TeX, using MathJax.
             script.src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js";
             script.onload = function () {
               mathJax = MathJax;
-              for (var j=0; j < toTypeset.length; j++) {
-                mathJax.Hub.Queue(["Typeset", MathJax.Hub, toTypeset[j]]);
-              }
+              queue.forEach(processElement);
+              queue = [];
             }
             head.appendChild(script);
           }
         },
         typeset: function (el) {
-          if (mathJax) {
-            mathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
-          } else {
-            toTypeset.push(el);
-          }
+          mathJax ? processElement(el) : queue.push(el);
         }
       });
     })();
@@ -57,14 +57,13 @@ Typesetting math described by TeX, using MathJax.
   <script>
     Polymer('math-tex', {
       ready: function () {
-        var sd = this.createShadowRoot();
         var script = document.createElement('script');
         script.type = "math/tex";
         if (this.mode === 'display') {
           script.type += "; mode=display";
         }
         script.innerHTML = this.textContent;
-        sd.appendChild(script);
+        this.createShadowRoot().appendChild(script);
         this.$.setup.typeset(script);
       }
     });
