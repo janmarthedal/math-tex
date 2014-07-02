@@ -1,36 +1,35 @@
 <!doctype html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <title>math-tex Demo</title>
-
-  <script src="../platform/platform.js"></script>
-  <link rel="import" href="math-tex.html">
-  <math-tex-setup></math-tex-setup>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>math-tex demo</title>
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="math-tex.html">
+    <math-tex-setup></math-tex-setup>
 </head>
 <body unresolved>
 
-    <p>First, some inline <math-tex>x^2</math-tex> formula.</p>
+    <h1><code>&lt;math-tex&gt;</code> demo</h1>
 
-    <p>Then, a display mode formula:</p>
+    <p>For <math-tex>n \in \mathbb N = 1, 2, 3, \ldots</math-tex> we have</p>
 
-    <math-tex mode="display">\sum</math-tex>
+    <math-tex mode="display">\sum_{k=1}^n k = \frac{n(n+1)}{2}</math-tex>
 
-    <p>And finally, we insert some expression <math-tex>\sqrt{x}</math-tex> inline again.</p>
+    <p>The first two Fibonacci numbers are defined to be (<a href="#" onclick="more_fibs();">click for more</a>):</p>
 
-    <p>To try dynamic insertion, <a href="#" onclick="insert();">press here</a>.</p>
-
-    <ul id="my-list">
+    <ul id="fib-list">
+      <li><math-tex>F_0 = 0</math-tex></li>
+      <li><math-tex>F_1 = 1</math-tex></li>
     </ul>
 
     <script type="text/javascript">
-      window.insert = (function () {
-        var counter = 2;
-        return function () {
-          var ul = document.getElementById("my-list");
+      window.more_fibs = (function () {
+        var idx=1, a=0, b=1;
+        return function (e) {
+          var ul = document.getElementById("fib-list");
           var li = document.createElement("li");
-          li.innerHTML = "<math-tex>" + (2*counter-1) + " + x^" + counter + "</math-tex>";
-          counter++;
+          var t = a + b; a = b; b = t; idx++;
+          li.innerHTML = "<math-tex>F_{" + idx + "} = F_{" + (idx-1) + "} + F_{" + (idx-2) + "} = " + b + "</math-tex>";
           ul.appendChild(li);
         }
       })();

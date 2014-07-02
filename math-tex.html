@@ -1,14 +1,19 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <!--
-Typesetting math described by TeX, using MathJax.
+Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
 
 ##### Example
 
-    <math-tex>x^2</math-tex>
+Inline math:
+
+    <math-tex>c = \sqrt{a^2 + b^2}</math-tex>
+
+Display math:
+
+    <math-tex mode="display">\sum_{k=1}^n k = \frac{n (n + 1)}{2}</math-tex>
 
 @element math-tex
-@blurb Element providing solution to ...
 @status alpha
 @homepage http://github.com/janmarthedal/math-tex/
 -->
@@ -16,34 +21,42 @@ Typesetting math described by TeX, using MathJax.
 <polymer-element name="math-tex-setup">
   <script>
     (function() {
-      var mathJax, queue=[], initialized=false;
+      var queue = [];   // elements to process when ready
+      var state = 0;    // 0:uninitialized, 1:loading, 2:loaded, 3:ready, -1:failed
 
       function processElement(el) {
-        mathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, el.getMathElement()]);
       }
 
       Polymer('math-tex-setup', {
         created: function () {
-          if (!initialized) {
-            initialized = true;
-            var head = document.getElementsByTagName("head")[0], script;
-            script = document.createElement("script");
-            script.type = "text/x-mathjax-config";
-            script.text = "MathJax.Hub.Config({skipStartupTypeset: true, jax: [\"input/TeX\", \"output/HTML-CSS\"]});"
-            head.appendChild(script);
-            script = document.createElement("script");
+          if (state === 0) {
+            state = 1;
+            MathJax = {
+              skipStartupTypeset: true,
+              jax: ["input/TeX", "output/HTML-CSS"],
+              AuthorInit: function () {
+                MathJax.Hub.Register.StartupHook("End", function () {
+                  state = 3;
+                  queue.forEach(processElement);
+                  queue = [];
+                });
+              }
+            };
+            var script = document.createElement("script");
             script.type = "text/javascript";
             script.src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js";
-            script.onload = function () {
-              mathJax = MathJax;
-              queue.forEach(processElement);
-              queue = [];
-            }
-            head.appendChild(script);
+            script.onload = function () { state = 2; }
+            script.onerror = function () { state = -1; queue = []; }
+            document.getElementsByTagName("head")[0].appendChild(script);
           }
         },
         typeset: function (el) {
-          mathJax ? processElement(el) : queue.push(el);
+          if (state === 3) {
+            processElement(el)
+          } else if (state !== -1) {
+            queue.push(el);
+          }
         }
       });
     })();
@@ -51,20 +64,24 @@ Typesetting math described by TeX, using MathJax.
 </polymer-element>
 
 <polymer-element name="math-tex" attributes="mode">
-  <template>
-    <math-tex-setup id="setup"></math-tex-setup>
-  </template>
   <script>
     Polymer('math-tex', {
       ready: function () {
+        var shadow = this.createShadowRoot();
+        var setup = document.createElement('math-tex-setup');
+        shadow.appendChild(setup);
         var script = document.createElement('script');
         script.type = "math/tex";
         if (this.mode === 'display') {
           script.type += "; mode=display";
         }
         script.innerHTML = this.textContent;
-        this.createShadowRoot().appendChild(script);
-        this.$.setup.typeset(script);
+        shadow.appendChild(script);
+        this.jaxelem = script;
+        setup.typeset(this);
+      },
+      getMathElement: function () {
+        return this.jaxelem;
       }
     });
   </script>
