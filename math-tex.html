@@ -5,11 +5,9 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
 
 ##### Example
 
-Inline math:
-
     <math-tex>c = \sqrt{a^2 + b^2}</math-tex>
 
-Display math:
+##### Example
 
     <math-tex mode="display">\sum_{k=1}^n k = \frac{n (n + 1)}{2}</math-tex>
 
@@ -35,6 +33,9 @@ Display math:
             MathJax = {
               skipStartupTypeset: true,
               jax: ["input/TeX", "output/HTML-CSS"],
+              TeX: {
+                extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"]
+              },
               AuthorInit: function () {
                 MathJax.Hub.Register.StartupHook("End", function () {
                   state = 3;

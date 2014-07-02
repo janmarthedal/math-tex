@@ -25,12 +25,11 @@
     <script type="text/javascript">
       window.more_fibs = (function () {
         var idx=1, a=0, b=1;
-        return function (e) {
-          var ul = document.getElementById("fib-list");
+        return function () {
           var li = document.createElement("li");
           var t = a + b; a = b; b = t; idx++;
           li.innerHTML = "<math-tex>F_{" + idx + "} = F_{" + (idx-1) + "} + F_{" + (idx-2) + "} = " + b + "</math-tex>";
-          ul.appendChild(li);
+          document.getElementById("fib-list").appendChild(li);
         }
       })();
     </script>

@@ -3,7 +3,7 @@ math-tex
 
 A [polymer](http://polymer-project.org) element for typesetting math written in \(La\)TeX, using [MathJax](http://mathjax.org).
 
-See the [demo](http://janmarthedal.github.io/math-tex/components/math-tex/demo.html).
+See the [component page](http://janmarthedal.github.io/math-tex/) and the [demo](http://janmarthedal.github.io/math-tex/components/math-tex/demo.html).
 
 ## Get started
 
