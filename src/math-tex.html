@@ -1,71 +1,9 @@
-<script>
-(function() {
-    var state = 0; // 0:not loaded, 1:loading, 2:ready, -1:error
-    var queue = [];
-    
-    function enqueueTypeset(elem) {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem]);
-    }
-
-    function readyCallback() {
-        state = 2;
-        queue.forEach(enqueueTypeset);
-        queue = [];
-    }
-
-    // Creates an object based in the HTML Element prototype
-    var element = Object.create(HTMLElement.prototype);
-
-    // Fires when an instance of the element is created
-    element.createdCallback = function () {
-        if (state === 0) {
-            state = 1;
-            MathJax = {
-                skipStartupTypeset: true,
-                jax: ["input/TeX", "output/HTML-CSS"],
-                TeX: {
-                    extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"]
-                },
-                AuthorInit: function () {
-                    MathJax.Hub.Register.StartupHook("End Config", function () {
-                        var waitFor = MathJax.Hub.config.skipStartupTypeset ? "End" : "Begin Typeset";
-                        MathJax.Hub.Register.StartupHook(waitFor, readyCallback);
-                    });
-                }
-            };
-            var script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js";
-            script.onerror = function () { state = -1; queue = []; }
-            document.getElementsByTagName("head")[0].appendChild(script);            
-        }
-    };
-
-    // Fires when an instance was inserted into the document
-    element.attachedCallback = function () {};
-
-    // Fires when an instance was removed from the document
-    element.detachedCallback = function () {};
-
-    // Fires when an attribute was added, removed, or updated
-    element.attributeChangedCallback = function (attr, oldVal, newVal) {};
-    
-    element.typeset = function (elem) {
-        state === 2 ? enqueueTypeset(elem) : queue.push(elem);
-    };
-
-    document.registerElement('mathjax-loader', {
-        prototype: element
-    });
-}());
-</script>
+<link rel="import" href="mathjax-loader.html">
 
 <script>
 (function() {
-    // Creates an object based in the HTML Element prototype
     var element = Object.create(HTMLElement.prototype);
 
-    // Fires when an instance of the element is created
     element.createdCallback = function () {
         var shadow = this.createShadowRoot();
         var mathjax_loader = document.createElement('mathjax-loader');
@@ -78,7 +16,6 @@
         };
     };
 
-    // Fires when an instance was inserted into the document
     element.attachedCallback = function () {
         this._private.script.type = "math/tex";
         if (this.getAttribute('mode') === 'display') {
@@ -88,14 +25,6 @@
         this._private.mathjax.typeset(this._private.script);
     };
 
-    // Fires when an instance was removed from the document
-    element.detachedCallback = function () {};
-
-    // Fires when an attribute was added, removed, or updated
-    element.attributeChangedCallback = function (attr, oldVal, newVal) {};
-
-    document.registerElement('math-tex', {
-        prototype: element
-    });
+    document.registerElement('math-tex', {prototype: element});
 }());
 </script>

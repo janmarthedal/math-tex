@@ -1,0 +1,45 @@
+<script>
+(function() {
+    var state = 0; // 0:not loaded, 1:loading, 2:ready, -1:error
+    var queue = [];
+    
+    function enqueueTypeset(elem) {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem]);
+    }
+
+    function readyCallback() {
+        state = 2;
+        queue.forEach(enqueueTypeset);
+        queue = [];
+    }
+
+    var element = Object.create(HTMLElement.prototype);
+
+    element.createdCallback = function () {
+        if (state === 0) {
+            state = 1;
+            MathJax = {
+                skipStartupTypeset: true,
+                jax: ["input/TeX", "output/HTML-CSS"],
+                AuthorInit: function () {
+                    MathJax.Hub.Register.StartupHook("End Config", function () {
+                        var waitFor = MathJax.Hub.config.skipStartupTypeset ? "End" : "Begin Typeset";
+                        MathJax.Hub.Register.StartupHook(waitFor, readyCallback);
+                    });
+                }
+            };
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js";
+            script.onerror = function () { state = -1; };
+            document.getElementsByTagName("head")[0].appendChild(script);            
+        }
+    };
+
+    element.typeset = function (elem) {
+        state === 2 ? enqueueTypeset(elem) : queue.push(elem);
+    };
+
+    document.registerElement('mathjax-loader', {prototype: element});
+}());
+</script>
