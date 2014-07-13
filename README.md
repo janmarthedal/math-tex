@@ -1,32 +1,103 @@
-math-tex
-========
+# &lt;my-repo&gt;
 
-A [polymer](http://polymer-project.org) element for typesetting math written in \(La\)TeX, using [MathJax](http://mathjax.org).
+> A bare minimum custom element starter-kit using [VanillaJS](http://vanilla-js.com/).
+>
+> Like [Yeoman](http://yeoman.io/)? Use the [generator-element](https://www.npmjs.org/package/generator-element) instead.
+>
+> Looking for a working example? Check [hello-world-element](https://github.com/webcomponents/hello-world-element).
 
-See the [component page](http://janmarthedal.github.io/math-tex/) and the [demo](http://janmarthedal.github.io/math-tex/components/math-tex/demo.html).
+## Demo
 
-## Get started
+[Check it live!](http://my-user.github.io/my-repo)
 
-To use on your page [download](https://github.com/Polymer/platform/releases) `platform.js` and `math-tex.html`.
+## Install
 
-Then make sure
+Install the component using [Bower](http://bower.io/):
 
-    <script src="platform.js"></script>
+```sh
+$ bower install my-repo --save
+```
 
-is present in your page head (adjust path as needed), followed by
-
-    <link rel="import" href="math-tex.html">
+Or [download as ZIP](https://github.com/my-user/my-repo/archive/master.zip).
 
 ## Usage
 
-To insert math inline, write something like `<math-tex>x^2+2x-8</math-tex>`.
+1. Import Web Components' polyfill:
 
-To render math in display/block style, add the attribute `mode="display"`:
+    ```html
+    <script src="bower_components/platform/platform.js"></script>
+    ```
 
-    <math-tex mode="display">\sum_{k=1}^n k = \frac{n(n+1)}{2}</math-tex>
+2. Import Custom Element:
 
-By default, the MathJax library will be loaded when the first `<math-tex>` tag is met. To start loading the library earlier, for instance in the head of the page, you can put
+    ```html
+    <link rel="import" href="bower_components/my-repo/src/my-element.html">
+    ```
 
-    <math-tag-setup></math-tag-setup>
+3. Start using it!
 
-where you would like the load to start (it will not block loading the rest of the page).
+    ```html
+    <my-element></my-element>
+    ```
+
+## Options
+
+Attribute     | Options     | Default      | Description
+---           | ---         | ---          | ---
+`foo`         | *string*    | `bar`        | Lorem ipsum dolor.
+
+## Methods
+
+Method        | Parameters   | Returns     | Description
+---           | ---          | ---         | ---
+`unicorn()`   | None.        | Nothing.    | Magic stuff appears.
+
+## Events
+
+Event         | Description
+---           | ---
+`onsomething` | Triggers when something happens.
+
+## Development
+
+In order to run it locally you'll need to fetch some dependencies and a basic server setup.
+
+* Install [Bower](http://bower.io/) & [Grunt](http://gruntjs.com/):
+
+    ```sh
+    $ [sudo] npm install -g bower grunt-cli
+    ```
+
+* Install local dependencies:
+
+    ```sh
+    $ bower install && npm install
+    ```
+
+* To test your project, start the development server and open `http://localhost:8000`.
+
+    ```sh
+    $ grunt server
+    ```
+
+* To provide a live demo, send everything to `gh-pages` branch.
+
+    ```sh
+    $ grunt deploy
+    ```
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
+
+## History
+
+For detailed changelog, check [Releases](https://github.com/my-user/my-repo/releases).
+
+## License
+
+[MIT License](http://opensource.org/licenses/MIT)

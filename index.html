@@ -1,23 +1,38 @@
-<!doctype html>
-<!--
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE
-The complete set of authors may be found at http://polymer.github.io/AUTHORS
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS
--->
+<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <script src="../platform/platform.js"></script>
-  <link rel="import" href="../polymer/polymer.html">
-  <link rel="import" href="../core-component-page/core-component-page.html">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>&lt;math-tex&gt;</title>
+    <script src="bower_components/platform/platform.js"></script>
+    <link rel="import" href="src/math-tex.html">
 </head>
-<body unresolved>
+<body>
 
-  <core-component-page></core-component-page>
+    <h1><code>&lt;math-tex&gt;</code> demo</h1>
+
+    <p>For <math-tex>n \in \mathbb N = 1, 2, 3, \ldots</math-tex> we have</p>
+
+    <math-tex mode="display">\sum_{k=1}^n k = \frac{n(n+1)}{2}</math-tex>
+
+    <p>The first two Fibonacci numbers are defined to be (<a href="#" onclick="more_fibs();">click for more</a>):</p>
+
+    <ul id="fib-list">
+      <li><math-tex>F_0 = 0</math-tex></li>
+      <li><math-tex>F_1 = 1</math-tex></li>
+    </ul>
+
+    <script type="text/javascript">
+      window.more_fibs = (function () {
+        var idx=1, a=0, b=1;
+        return function () {
+          var li = document.createElement("li");
+          var t = a + b; a = b; b = t; idx++;
+          li.innerHTML = "<math-tex>F_{" + idx + "} = F_{" + (idx-1) + "} + F_{" + (idx-2) + "} = " + b + "</math-tex>";
+          document.getElementById("fib-list").appendChild(li);
+        }
+      })();
+    </script>
 
 </body>
 </html>
