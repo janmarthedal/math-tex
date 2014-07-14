@@ -1,14 +1,23 @@
 <script>
 (function() {
-    var state = 0; // 0:not loaded, 1:loading, 2:ready, -1:error
+    var states = {
+        start: 'start', configured: 'configured', loading: 'loading', ready: 'ready', error: 'error'
+    };
+    var state = states.start;
     var queue = [];
+    var options = {
+        src: "http://cdn.mathjax.org/mathjax/latest/MathJax.js",
+        async: false,
+        ondemand: true
+    };
     
     function enqueueTypeset(elem) {
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem]);
     }
 
     function readyCallback() {
-        state = 2;
+        state = states.ready;
+        console.log('ready');
         queue.forEach(enqueueTypeset);
         queue = [];
     }
@@ -16,8 +25,20 @@
     var element = Object.create(HTMLElement.prototype);
 
     element.createdCallback = function () {
-        if (state === 0) {
-            state = 1;
+        console.log('loader created');
+        if (state === states.start) {
+            options.async = this.hasAttribute("async");
+            if (this.hasAttribute("src"))
+                options.src = this.getAttribute("src");
+            if (this.hasAttribute("load"))
+                options.ondemand = this.getAttribute("load") === "ondemand";
+            state = states.configured;
+            if (options.ondemand)
+                return;
+        }
+        if (state === states.configured) {
+            console.log('loading');
+            state = states.loading;
             MathJax = {
                 skipStartupTypeset: true,
                 jax: ["input/TeX", "output/HTML-CSS"],
@@ -30,14 +51,18 @@
             };
             var script = document.createElement("script");
             script.type = "text/javascript";
-            script.src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js";
-            script.onerror = function () { state = -1; };
+            script.src = options.src;
+            script.async = options.async;
+            script.onerror = function () { state = states.error; queue = []; };
             document.getElementsByTagName("head")[0].appendChild(script);            
         }
     };
 
     element.typeset = function (elem) {
-        state === 2 ? enqueueTypeset(elem) : queue.push(elem);
+        if (state === states.ready)
+            enqueueTypeset(elem);
+        else if (state !== states.error)
+            queue.push(elem);
     };
 
     document.registerElement('mathjax-loader', {prototype: element});
