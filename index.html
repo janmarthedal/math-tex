@@ -6,7 +6,6 @@
     <title>&lt;math-tex&gt;</title>
     <script src="bower_components/platform/platform.js"></script>
     <link rel="import" href="src/math-tex.html">
-    <mathjax-loader async load="now"></mathjax-loader>
 </head>
 <body>
 
@@ -31,7 +30,7 @@
           var t = a + b; a = b; b = t; idx++;
           li.innerHTML = "<math-tex>F_{" + idx + "} = F_{" + (idx-1) + "} + F_{" + (idx-2) + "} = " + b + "</math-tex>";
           document.getElementById("fib-list").appendChild(li);
-        }
+        };
       })();
     </script>
 

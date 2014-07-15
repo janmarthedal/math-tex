@@ -12,7 +12,7 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
     <math-tex mode="display">\sum_{k=1}^n k = \frac{n (n + 1)}{2}</math-tex>
 
 @element math-tex
-@status alpha
+@version 0.2
 @homepage http://github.com/janmarthedal/math-tex/
 -->
 <script>
@@ -32,7 +32,7 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
     };
 
     element.attachedCallback = function () {
-        this._private.script.type = "math/tex";
+        this._private.script.type = 'math/tex';
         if (this.getAttribute('mode') === 'display') {
             this._private.script.type += "; mode=display";
         }

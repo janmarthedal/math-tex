@@ -24,13 +24,11 @@
 
     element.createdCallback = function () {
         if (state === states.start) {
-            var ondemand = this.hasAttribute("ondemand");
             options.async = this.hasAttribute("async");
             if (this.hasAttribute("src"))
                 options.src = this.getAttribute("src");
             state = states.configured;
-            if (ondemand)
-                return;
+            if (this.hasAttribute("ondemand")) return;
         }
         if (state === states.configured) {
             state = states.loading;
