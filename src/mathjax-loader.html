@@ -6,9 +6,8 @@
     var state = states.start;
     var queue = [];
     var options = {
-        src: "http://cdn.mathjax.org/mathjax/latest/MathJax.js",
-        async: false,
-        ondemand: true
+        src: "//cdn.mathjax.org/mathjax/latest/MathJax.js",
+        async: false
     };
     
     function enqueueTypeset(elem) {
@@ -17,7 +16,6 @@
 
     function readyCallback() {
         state = states.ready;
-        console.log('ready');
         queue.forEach(enqueueTypeset);
         queue = [];
     }
@@ -25,19 +23,16 @@
     var element = Object.create(HTMLElement.prototype);
 
     element.createdCallback = function () {
-        console.log('loader created');
         if (state === states.start) {
+            var ondemand = this.hasAttribute("ondemand");
             options.async = this.hasAttribute("async");
             if (this.hasAttribute("src"))
                 options.src = this.getAttribute("src");
-            if (this.hasAttribute("load"))
-                options.ondemand = this.getAttribute("load") === "ondemand";
             state = states.configured;
-            if (options.ondemand)
+            if (ondemand)
                 return;
         }
         if (state === states.configured) {
-            console.log('loading');
             state = states.loading;
             MathJax = {
                 skipStartupTypeset: true,
