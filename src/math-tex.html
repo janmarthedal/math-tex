@@ -17,28 +17,43 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
 -->
 <script>
 (function() {
+    var mathjax;
+
+    function update(jax, mode, math) {
+        var firstTypeset = !jax.hasAttribute('type');
+        jax.type = mode === 'display' ? 'math/tex; mode=display' : 'math/tex';
+        if (math)
+            jax.textContent = math;
+        firstTypeset ? mathjax.typeset(jax) : mathjax.reprocess(jax);
+    }
+
     var element = Object.create(HTMLElement.prototype);
 
     element.createdCallback = function () {
-        var shadow = this.createShadowRoot();
-        var mathjax_loader = document.createElement('mathjax-loader');
+        if (!mathjax)
+            mathjax = document.createElement('mathjax-loader');
+        var sdom = this.createShadowRoot();
         var script = document.createElement('script');
-        shadow.appendChild(mathjax_loader);
-        shadow.appendChild(script);
-        this._private = {
-            mathjax: mathjax_loader,
-            script: script
-        };
+        sdom.appendChild(script);
+        this._jax = script;
     };
 
     element.attachedCallback = function () {
-        this._private.script.type = 'math/tex';
-        if (this.getAttribute('mode') === 'display') {
-            this._private.script.type += "; mode=display";
-        }
-        this._private.script.textContent = this.textContent;
-        this._private.mathjax.typeset(this._private.script);
+        update(this._jax, this.getAttribute('mode'), this.textContent);
     };
+
+    element.attributeChangedCallback = function (attr, oldVal, newVal) {
+        if (attr === 'mode')
+            update(this._jax, newVal);
+    };
+
+    Object.defineProperty(element, 'math', {
+        get: function () { return this.textContent; },
+        set: function (value) {
+            this.textContent = value;
+            update(this._jax, this.getAttribute('mode'), value);
+        }
+    });
 
     document.registerElement('math-tex', {prototype: element});
 }());

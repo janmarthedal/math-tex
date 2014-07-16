@@ -9,15 +9,23 @@
         src: "//cdn.mathjax.org/mathjax/latest/MathJax.js",
         async: false
     };
-    
-    function enqueueTypeset(elem) {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem]);
+
+    function requestTypeset(entry) {
+        MathJax.Hub.Queue([entry[0], MathJax.Hub, entry[1]]);
     }
 
     function readyCallback() {
         state = states.ready;
-        queue.forEach(enqueueTypeset);
+        queue.forEach(requestTypeset);
         queue = [];
+    }
+
+    function pushAction(action, elem) {
+        var entry = [action, elem];
+        if (state === states.ready)
+            requestTypeset(entry);
+        else if (state !== states.error)
+            queue.push(entry);
     }
 
     var element = Object.create(HTMLElement.prototype);
@@ -28,7 +36,8 @@
             if (this.hasAttribute("src"))
                 options.src = this.getAttribute("src");
             state = states.configured;
-            if (this.hasAttribute("ondemand")) return;
+            if (this.hasAttribute("ondemand"))
+                return;
         }
         if (state === states.configured) {
             state = states.loading;
@@ -47,15 +56,16 @@
             script.src = options.src;
             script.async = options.async;
             script.onerror = function () { state = states.error; queue = []; };
-            document.getElementsByTagName("head")[0].appendChild(script);            
+            document.getElementsByTagName("head")[0].appendChild(script);
         }
     };
 
     element.typeset = function (elem) {
-        if (state === states.ready)
-            enqueueTypeset(elem);
-        else if (state !== states.error)
-            queue.push(elem);
+        pushAction("Typeset", elem);
+    };
+
+    element.reprocess = function (elem) {
+        pushAction("Reprocess", elem);
     };
 
     document.registerElement('mathjax-loader', {prototype: element});
