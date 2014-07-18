@@ -1,9 +1,9 @@
 {
     "name": "math-tex",
-    "version": "0.2",
+    "version": "0.21",
     "description": "Custom Element for typesetting TeX expressions using MathJax",
     "license": "MIT",
-    "main": "src/math-tex.html",
+    "main": "math-tex.html",
     "keywords": [
         "web-components", "mathjax", "math"
     ],
@@ -11,8 +11,5 @@
         "**/.*",
         "node_modules",
         "bower_components"
-    ],
-    "dependencies": {
-        "platform": "Polymer/platform#~0.3.4"
-    }
+    ]
 }
