@@ -1,4 +1,9 @@
-(function() {
+var MathJax = {
+    skipStartupTypeset: true,
+    jax: ['input/TeX', 'output/HTML-CSS']
+};
+
+(function () {
     'use strict';
 
     var states = {start: 1, loading: 2, ready: 3, error: 4},
@@ -41,15 +46,11 @@
 
     function load_library() {
         state = states.loading;
-        MathJax = {
-            skipStartupTypeset: true,
-            jax: ['input/TeX', 'output/HTML-CSS'],
-            AuthorInit: function () {
-                MathJax.Hub.Register.StartupHook('End', function () {
-                    state = states.ready;
-                    check_queue();
-                });
-            }
+        MathJax.AuthorInit = function () {
+            MathJax.Hub.Register.StartupHook('End', function () {
+                state = states.ready;
+                check_queue();
+            });
         };
         var script = document.createElement('script');
         script.type = 'text/javascript';
