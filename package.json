@@ -1,0 +1,24 @@
+{
+  "name": "math-tex",
+  "version": "0.3.1",
+  "description": "Custom Element for typesetting TeX expressions using MathJax",
+  "main": "math-tex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janmarthedal/math-tex.git"
+  },
+  "keywords": [
+    "web-components",
+    "mathjax",
+    "math"
+  ],
+  "author": "Jan Marthedal Rasmussen <jan@janmr.com> (http://janmarthedal.github.io/math-tex/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janmarthedal/math-tex/issues"
+  },
+  "homepage": "https://github.com/janmarthedal/math-tex#readme"
+}
