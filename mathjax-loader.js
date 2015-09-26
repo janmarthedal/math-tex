@@ -1,56 +1,48 @@
-var MathJax = {
-    skipStartupTypeset: true,
-    jax: ['input/TeX', 'output/HTML-CSS']
-};
-
-(function () {
+(function (global) {
     'use strict';
 
-    var states = {start: 1, loading: 2, ready: 3, error: 4},
+    var states = {start: 1, loading: 2, ready: 3, typesetting: 4, error: 5},
         state = states.start,
-        typesetting = false,
         queue = [],
         src = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js',
         element_prototype = Object.create(HTMLElement.prototype);
 
-    function process_queue() {
+    function flush_queue() {
         var typesets = [], reprocesses = [];
         queue.forEach(function (elem) {
-            var state = MathJax.Hub.isJax(elem);
-            if (state === -1)
+            var elem_state = MathJax.Hub.isJax(elem);
+            if (elem_state === -1)
                 typesets.push(elem);
-            else if (state === 1)
+            else if (elem_state === 1)
                 reprocesses.push(elem);
         });
         queue = [];
-        if (typesets.length) {
-            if (typesets.length === 1) typesets = typesets[0];
-            MathJax.Hub.Queue(['Typeset', MathJax.Hub, typesets]);
-        }
-        if (reprocesses.length) {
-            if (reprocesses.length === 1) reprocesses = reprocesses[0];
-            MathJax.Hub.Queue(['Reprocess', MathJax.Hub, reprocesses]);
-        }
-        if (typesets.length || reprocesses.length)
-            MathJax.Hub.Queue(process_queue);
-        else
-            typesetting = false;
-    }
-
-    function check_queue() {
-        if (state === states.ready && !typesetting) {
-            typesetting = true;
-            process_queue();
-        }
+        if (typesets.length || reprocesses.length) {
+            state = states.typesetting;
+            if (typesets.length) {
+                if (typesets.length === 1) typesets = typesets[0];
+                MathJax.Hub.Queue(['Typeset', MathJax.Hub, typesets]);
+            }
+            if (reprocesses.length) {
+                if (reprocesses.length === 1) reprocesses = reprocesses[0];
+                MathJax.Hub.Queue(['Reprocess', MathJax.Hub, reprocesses]);
+            }
+            MathJax.Hub.Queue(flush_queue);
+        } else
+            state = states.ready;
     }
 
     function load_library() {
         state = states.loading;
-        MathJax.AuthorInit = function () {
-            MathJax.Hub.Register.StartupHook('End', function () {
-                state = states.ready;
-                check_queue();
-            });
+        global.MathJax = {
+            skipStartupTypeset: true,
+            jax: ['input/TeX', 'output/HTML-CSS'],
+            AuthorInit: function () {
+                MathJax.Hub.Register.StartupHook('End', function () {
+                    state = states.ready;
+                    flush_queue();
+                });
+            }
         };
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -67,7 +59,7 @@ var MathJax = {
     element_prototype.attachedCallback = function () {
         if (this.hasAttribute('src'))
             src = this.getAttribute('src');
-        if (!this.hasAttribute('lazyload'))
+        if (!this.hasAttribute('lazy'))
             load_library();
     };
 
@@ -75,14 +67,14 @@ var MathJax = {
         if (state === states.error)
             return;
         queue.push(elem);
-        if (state === state.ready)  // lazy load
+        if (state === states.start)
             load_library();
-        else
-            check_queue();
+        else if (state === states.ready)
+            flush_queue();
     };
 
     document.registerElement('mathjax-loader', {
         prototype: element_prototype
     });
 
-})();
+})(window);

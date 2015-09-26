@@ -1,6 +1,6 @@
 {
     "name": "math-tex",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "Custom Element for typesetting TeX expressions using MathJax",
     "license": "ISC",
     "main": "math-tex.js",

@@ -10,7 +10,7 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
     <math-tex mode="display">\sum_{k=1}^n k = \frac{n (n + 1)}{2}</math-tex>
 
 @element math-tex
-@version 0.3.0
+@version 0.3.2
 @homepage http://github.com/janmarthedal/math-tex/
 */
 (function() {
@@ -23,18 +23,17 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
         element_prototype = Object.create(HTMLElement.prototype);
 
     function check_handler() {
-        if (handler || (handler = document.querySelector(HANDLER_TAG_NAME))) return;
-        handler = document.createElement(HANDLER_TAG_NAME);
+        if (handler) return;
+        handler = document.querySelector(HANDLER_TAG_NAME) || document.createElement(HANDLER_TAG_NAME);
         if (!handler || typeof handler.typeset !== 'function') {
             console.warn(['no', HANDLER_TAG_NAME, 'element defined;', TAG_NAME, 'element will not work'].join(' '));
             handler = undefined;
-        } else
+        } else if (!document.contains(handler))
             document.head.appendChild(handler);
     }
 
     element_prototype.createdCallback = function () {
         check_handler();
-        if (!handler) return;
         var script = document.createElement('script');
         this.createShadowRoot().appendChild(script);
         this._private = {jax: script};
@@ -42,7 +41,6 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
 
     element_prototype.attachedCallback = function () {
         var elem = this;
-        if (!handler) return;
         if (this.textContent.trim())
             this.update();
         this._private.observer = new MutationObserver(function () {
@@ -61,8 +59,9 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
     element_prototype.update = function () {
         var script = this._private.jax;
         script.type = this.getAttribute('display') === 'block' ? 'math/tex; mode=display' : 'math/tex';
-        script.textContent = this.textContent;
-        handler.typeset(script);
+        script.text = this.textContent;
+        if (handler)
+            handler.typeset(script);
     }
 
     document.registerElement(TAG_NAME, {prototype: element_prototype});
