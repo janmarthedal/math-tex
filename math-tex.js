@@ -18,7 +18,7 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
 
     var TAG_NAME = 'math-tex',
         HANDLER_TAG_NAME = 'mathjax-loader',
-        mutation_config = {childList: true, characterData: true, attributes: true},
+        mutation_config = {childList: true, characterData: true, attributes: true, subtree: true},
         handler,
         element_prototype = Object.create(HTMLElement.prototype);
 
@@ -26,7 +26,7 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
         if (handler) return;
         handler = document.querySelector(HANDLER_TAG_NAME) || document.createElement(HANDLER_TAG_NAME);
         if (!handler || typeof handler.typeset !== 'function') {
-            console.warn(['no', HANDLER_TAG_NAME, 'element defined;', TAG_NAME, 'element will not work'].join(' '));
+            console.warn('no %s element defined; %s element will not work', HANDLER_TAG_NAME, TAG_NAME);
             handler = undefined;
         } else if (!document.contains(handler))
             document.head.appendChild(handler);

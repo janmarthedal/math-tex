@@ -1,19 +1,21 @@
 (function (global) {
     'use strict';
 
-    var states = {start: 1, loading: 2, ready: 3, typesetting: 4, error: 5},
+    var document = global.document,
+        states = {start: 1, loading: 2, ready: 3, typesetting: 4, error: 5},
         state = states.start,
         queue = [],
+        mathjaxHub,
         src = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js',
         element_prototype = Object.create(HTMLElement.prototype);
 
     function flush_queue() {
         var typesets = [], reprocesses = [];
         queue.forEach(function (elem) {
-            var elem_state = MathJax.Hub.isJax(elem);
-            if (elem_state === -1)
+            var elem_state = mathjaxHub.isJax(elem);
+            if (elem_state < 0)
                 typesets.push(elem);
-            else if (elem_state === 1)
+            else if (elem_state > 0)
                 reprocesses.push(elem);
         });
         queue = [];
@@ -21,13 +23,13 @@
             state = states.typesetting;
             if (typesets.length) {
                 if (typesets.length === 1) typesets = typesets[0];
-                MathJax.Hub.Queue(['Typeset', MathJax.Hub, typesets]);
+                mathjaxHub.Queue(['Typeset', mathjaxHub, typesets]);
             }
             if (reprocesses.length) {
                 if (reprocesses.length === 1) reprocesses = reprocesses[0];
-                MathJax.Hub.Queue(['Reprocess', MathJax.Hub, reprocesses]);
+                mathjaxHub.Queue(['Reprocess', mathjaxHub, reprocesses]);
             }
-            MathJax.Hub.Queue(flush_queue);
+            mathjaxHub.Queue(flush_queue);
         } else
             state = states.ready;
     }
@@ -38,7 +40,8 @@
             skipStartupTypeset: true,
             jax: ['input/TeX', 'output/HTML-CSS'],
             AuthorInit: function () {
-                MathJax.Hub.Register.StartupHook('End', function () {
+                mathjaxHub = global.MathJax.Hub;
+                mathjaxHub.Register.StartupHook('End', function () {
                     state = states.ready;
                     flush_queue();
                 });
