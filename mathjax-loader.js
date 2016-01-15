@@ -38,7 +38,11 @@
         state = states.loading;
         global.MathJax = {
             skipStartupTypeset: true,
+            showMathMenu: false,
             jax: ['input/TeX', 'output/HTML-CSS'],
+            TeX: {
+                extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js']
+            },
             AuthorInit: function () {
                 mathjaxHub = global.MathJax.Hub;
                 mathjaxHub.Register.StartupHook('End', function () {
