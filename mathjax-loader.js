@@ -6,7 +6,7 @@
         state = states.start,
         queue = [],
         mathjaxHub,
-        src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js',
+        src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js',
         element_prototype = Object.create(HTMLElement.prototype);
 
     function flush_queue() {
