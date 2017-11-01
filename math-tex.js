@@ -13,57 +13,73 @@ Typesets math written in (La)TeX, using [MathJax](http://mathjax.org).
 @version 0.3.2
 @homepage http://github.com/janmarthedal/math-tex/
 */
-(function() {
+(function(global) {
     'use strict';
 
-    var TAG_NAME = 'math-tex',
-        HANDLER_TAG_NAME = 'mathjax-loader',
-        mutation_config = {childList: true, characterData: true, attributes: true, subtree: true},
-        handler,
-        element_prototype = Object.create(HTMLElement.prototype);
+    const TAG_NAME = 'math-tex',
+        CONTROLLER_TAG_NAME = 'math-tex-controller',
+        mutation_config = {childList: true, characterData: true, attributes: true, subtree: true};
+    let handler;
 
     function check_handler() {
         if (handler) return;
-        handler = document.querySelector(HANDLER_TAG_NAME) || document.createElement(HANDLER_TAG_NAME);
+        handler = document.querySelector(CONTROLLER_TAG_NAME) || document.createElement(CONTROLLER_TAG_NAME);
         if (!handler || typeof handler.typeset !== 'function') {
-            console.warn('no %s element defined; %s element will not work', HANDLER_TAG_NAME, TAG_NAME);
+            console.warn('no %s element defined; %s element will not work', CONTROLLER_TAG_NAME, TAG_NAME);
             handler = undefined;
         } else if (!document.contains(handler))
             document.head.appendChild(handler);
     }
 
-    element_prototype.createdCallback = function () {
-        check_handler();
-        var script = document.createElement('script');
-        this.createShadowRoot().appendChild(script);
-        this._private = {jax: script};
-    };
-
-    element_prototype.attachedCallback = function () {
-        var elem = this;
-        if (this.textContent.trim())
-            this.update();
-        this._private.observer = new MutationObserver(function () {
-            elem.update();
-        });
-        this._private.observer.observe(this, mutation_config);
-    };
-
-    element_prototype.detachedCallback = function () {
-        if (this._private) {
-            this._private.observer.disconnect();
-            delete this._private;
+    function update(elem) {
+        const sdom = elem.shadowRoot,
+            math = elem.textContent.trim(),
+            isBlock = elem.getAttribute('mode') === 'display',
+            check = (isBlock ? 'D' : 'I') + math;
+        if (check !== elem._private.check) {
+            while (sdom.firstChild)
+                sdom.removeChild(sdom.firstChild);
+            elem._private.check = check;
+            if (math.length) {
+                handler.typeset(math, isBlock, function(melem, styleNode) {
+                    sdom.appendChild(styleNode.cloneNode(true));
+                    sdom.appendChild(melem);
+                });
+            }
         }
     }
 
-    element_prototype.update = function () {
-        var script = this._private.jax;
-        script.type = this.getAttribute('display') === 'block' ? 'math/tex; mode=display' : 'math/tex';
-        script.text = this.textContent;
-        if (handler)
-            handler.typeset(script);
+    class MathTex extends HTMLElement {
+
+        constructor() {
+            super();
+            this.attachShadow({mode: 'open'});
+            check_handler();
+        }
+
+        connectedCallback() {
+            const elem = this;
+            global.requestAnimationFrame(function() {
+                elem._private = {
+                    check: '',
+                    observer: new MutationObserver(function () {
+                        update(elem);
+                    })
+                };
+                update(elem);
+                elem._private.observer.observe(elem, mutation_config);
+            });
+        }
+
+        disconnectedCallback() {
+            if (this._private) {
+                this._private.observer.disconnect();
+                delete this._private;
+            }
+        }
+
     }
 
-    document.registerElement(TAG_NAME, {prototype: element_prototype});
+    global.customElements.define(TAG_NAME, MathTex);
 
-})();
+})(window);
