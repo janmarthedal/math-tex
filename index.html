@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>&lt;math-tex&gt; demo</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.13/webcomponents-sd-ce.js"></script>
-    <script src="mathjax-loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.17/webcomponents-sd-ce.js"></script>
+    <script src="math-tex-controller.js"></script>
     <script src="math-tex.js"></script>
+    <math-tex-controller></math-tex-controller>
 </head>
 <body>
 
@@ -14,7 +15,7 @@
 
     <p>For <math-tex>n \in \mathbb N = 1, 2, 3, \ldots</math-tex> we have</p>
 
-    <math-tex display="block">\sum_{k=1}^n k = \frac{n(n+1)}{2}</math-tex>
+    <math-tex mode="display">\sum_{k=1}^n k = \frac{n(n+1)}{2}</math-tex>
 
     <p>The first two Fibonacci numbers are defined to be (<a href="#">click for more</a>):</p>
 
@@ -24,7 +25,7 @@
     </ul>
 
     <script type="text/javascript">
-      document.querySelector('a').onclick = (function () {
+      document.querySelector('a').addEventListener('click', (function() {
         var idx=1, a=0, b=1;
         return function (ev) {
           var li = document.createElement("li"), t = a + b;
@@ -33,7 +34,7 @@
           li.innerHTML = "<math-tex>F_{" + idx + "} = F_{" + (idx-1) + "} + F_{" + (idx-2) + "} = " + b + "</math-tex>";
           document.getElementById("fib-list").appendChild(li);
         };
-      })();
+      })());
     </script>
 
 </body>
